@@ -3,7 +3,6 @@
 import SocketServer
 import urlparse
 import urllib
-import requests
 import os
 
 from collections import namedtuple
@@ -44,9 +43,8 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
             public_key=SPARKFUN_PUBLIC_KEY,
             params=urllib.urlencode(query_params))
 
-        print("POST {}".format(url))
-        response = requests.post(url)
-        response.raise_for_status()
+        print("{}".format(url))
+        urllib.urlopen(url)
 
 if __name__ == "__main__":
 
