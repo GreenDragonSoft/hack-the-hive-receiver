@@ -1,0 +1,6 @@
+# Install this repo to `/opt/hack-the-hive-receiver` and save this file as
+# in `/etc/supervisor/conf.d/hack-the-hive-receiver` in order to have it
+# start up automatically.
+
+[program:receiver]
+command=/opt/hack-the-hive-receiver/run.sh
