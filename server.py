@@ -14,8 +14,8 @@ FILTER_IP = os.environ['FILTER_IP']
 SPARKFUN_PUBLIC_KEY = os.environ['SPARKFUN_PUBLIC_KEY']
 SPARKFUN_PRIVATE_KEY = os.environ['SPARKFUN_PRIVATE_KEY']
 
-LISTEN_HOST = "127.0.0.1"
-LISTEN_PORT = 12334
+LISTEN_HOST = "0.0.0.0"
+LISTEN_PORT = 11234
 
 
 class MyTCPHandler(SocketServer.StreamRequestHandler):
