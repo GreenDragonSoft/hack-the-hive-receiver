@@ -1,5 +1,7 @@
 #!/bin/bash -eux
 
-source credentials.sh
+THIS_DIR=$(dirname $0)
 
-exec python server.py
+source "${THIS_DIR}/credentials.sh"
+
+exec python -u "${THIS_DIR}/server.py"
