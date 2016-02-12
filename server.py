@@ -10,7 +10,7 @@ from collections import namedtuple
 SparkFunDataEndpoint = namedtuple(
     'SparkFunDataEndpoint', 'public_key,private_key')
 
-FILTER_IP = os.environ['FILTER_IP']
+SECRET_DEVICE_ID = os.environ['SECRET_DEVICE_ID']
 SPARKFUN_PUBLIC_KEY = os.environ['SPARKFUN_PUBLIC_KEY']
 SPARKFUN_PRIVATE_KEY = os.environ['SPARKFUN_PRIVATE_KEY']
 
@@ -23,25 +23,31 @@ class MyTCPHandler(SocketServer.StreamRequestHandler):
     def handle(self):
         self.data = self.rfile.readline().strip()
 
-        if FILTER_IP != self.client_address[0]:
-            print('Dropping {} bytes from `{}`'.format(
-                len(self.data), self.client_address[0]))
-            return
-
         self._write(self.data)
         self.wfile.write('OK')
 
     def _write(self, data):
         """
         data expected to be like:
-        'temperature_1=123&temperature_2=456'
+        'version=1&secret_device_id=???&temperature_1=123&temperature_2=456'
         """
-        query_params = {'private_key': SPARKFUN_PRIVATE_KEY}
-        query_params.update(urlparse.parse_qsl(data))
+        received_data = dict(urlparse.parse_qsl(data))
+
+        print('received_data from {}: {}'.format(
+            self.client_address[0], received_data))
+
+        assert received_data.pop('version') == '1', (
+                "Invalid or missing version number in data.")
+
+        assert received_data.pop('secret_device_id') == SECRET_DEVICE_ID, (
+                "Invalid or missing secret key in data")
+
+        received_data.update(
+            {'private_key': SPARKFUN_PRIVATE_KEY})  # for Sparkfun
 
         url = 'http://data.sparkfun.com/input/{public_key}?{params}'.format(
             public_key=SPARKFUN_PUBLIC_KEY,
-            params=urllib.urlencode(query_params))
+            params=urllib.urlencode(received_data))
 
         print("{}".format(url))
         urllib.urlopen(url)
